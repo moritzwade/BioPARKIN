@@ -1,4 +1,4 @@
-from PySide.QtCore import QObject
+from PySide.QtCore import QObject, Signal
 from databackend import constants
 
 
@@ -14,7 +14,23 @@ class DataAxis(QObject):
     @copyright: Zuse Institute Berlin, 2011
     """
 
+
+    def getData(self):
+        return self.__data
+
+    def setData(self, data):
+        assert isinstance(data, list)
+        self.__data = data
+        self.newData.emit()
+
+    def delData(self):
+        del self.__data
+
+    data = property(getData, setData, delData, "The list of data items/values.")
+    newData = Signal()
+
     def __init__(self, items=None, type=None):
         self.data = items
         self.meta = DataMeta() # automatically sets common meta info like CREATED, LAST_MODIFIED, etc.
         self.meta[constants.TYPE] = type
+
